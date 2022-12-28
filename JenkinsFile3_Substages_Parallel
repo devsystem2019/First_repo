@@ -15,16 +15,26 @@ pipeline {
 				    		 SCANNER_HOME = tool 'sonarScanner'
 				  		}
 			           steps {
+				   
+				    steps {
+
+					sh 'mvn test'
+         				  }
+           				post {
+           			  	always {
+              			  		junit "**/target/surefire-reports/*.xml"
+            				 }
+           				}
 			              
 			              echo "build 1.1"
-			              snDevOpsChange()
+			              //snDevOpsChange()
 			               
 			               //withSonarQubeEnv('Sonar_Cloud') {
 						       //sh '${SCANNER_HOME}/bin/sonar-scanner -Dproject.settings=${SCANNER_HOME}/conf/qa-sonar-scanner-cloud.properties'
 					       
 			        		//}
 			        		//withSonarQubeEnv('sonarQube_local') {
-			       				//sh '${SCANNER_HOME}/bin/sonar-scanner -Dproject.settings=${SCANNER_HOME}/conf/qa-sonar-scanner.properties'
+			       			//	sh '${SCANNER_HOME}/bin/sonar-scanner -Dproject.settings=${SCANNER_HOME}/conf/qa-sonar-scanner.properties'
 		       
         					//}
 				       
@@ -38,7 +48,12 @@ pipeline {
 						  		}
 					           steps {
 					              
-					              snDevOpsChange()
+						      
+						       
+						      snDevOpsArtifact(artifactsPayload: """{"artifacts": [{"name": "${artifactname}", "version": "1.${env.BUILD_NUMBER}","semanticVersion": "1.${env.BUILD_NUMBER}.0","repositoryName": "${repoName}"}],"branchName":"${env.BRANCH_NAME}"}""")
+          	  				      snDevOpsPackage(name: "${pkgName}-${env.BUILD_NUMBER}", artifactsPayload: """{"artifacts":[{"name": "${artifactname}", "version": "1.${env.BUILD_NUMBER}", "repositoryName": "${repoName}"}], "branchName":"${env.BRANCH_NAME}"}""")
+             
+					            //  snDevOpsChange()
 					               echo "build 1.2.3"
 
 						        	//withSonarQubeEnv('sonarQube_local') {
@@ -53,7 +68,7 @@ pipeline {
 	                            steps {
 	                                
 	                                echo 'Build1.2.4'
-	                                snDevOpsChange()
+	                                //snDevOpsChange()
 	                                
 	                            }
 	                        }
@@ -68,7 +83,7 @@ pipeline {
 	                    steps {
 	                    	
 	                         echo 'Test1.1'
-	                         snDevOpsChange()
+	                        // snDevOpsChange()
 	                    }
 	                    post {
 	                        success {
